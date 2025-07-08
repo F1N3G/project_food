@@ -20,6 +20,137 @@ const CATEGORY_OPTIONS = [
   'Other',
 ];
 
+// Mapping of common items to categories
+const ITEM_CATEGORY_MAP: Record<string, string> = {
+  // Dairy
+  milk: 'Dairy',
+  cheese: 'Dairy',
+  yogurt: 'Dairy',
+  butter: 'Dairy',
+  eggs: 'Dairy',
+  cream: 'Dairy',
+  sourcream: 'Dairy',
+  mozzarella: 'Dairy',
+  parmesan: 'Dairy',
+  feta: 'Dairy',
+  cottage: 'Dairy',
+  "cream cheese": 'Dairy',
+  // Meat
+  beef: 'Meat',
+  chicken: 'Meat',
+  pork: 'Meat',
+  fish: 'Meat',
+  turkey: 'Meat',
+  ham: 'Meat',
+  bacon: 'Meat',
+  sausage: 'Meat',
+  steak: 'Meat',
+  lamb: 'Meat',
+  salami: 'Meat',
+  shrimp: 'Meat',
+  tuna: 'Meat',
+  // Produce
+  apple: 'Produce',
+  apples: 'Produce',
+  banana: 'Produce',
+  bananas: 'Produce',
+  orange: 'Produce',
+  oranges: 'Produce',
+  lettuce: 'Produce',
+  tomato: 'Produce',
+  tomatoes: 'Produce',
+  cucumber: 'Produce',
+  cucumbers: 'Produce',
+  carrot: 'Produce',
+  carrots: 'Produce',
+  onion: 'Produce',
+  onions: 'Produce',
+  potato: 'Produce',
+  potatoes: 'Produce',
+  peach: 'Produce',
+  peaches: 'Produce',
+  grape: 'Produce',
+  grapes: 'Produce',
+  pear: 'Produce',
+  pears: 'Produce',
+  spinach: 'Produce',
+  kale: 'Produce',
+  broccoli: 'Produce',
+  cauliflower: 'Produce',
+  pepper: 'Produce',
+  peppers: 'Produce',
+  avocado: 'Produce',
+  avocados: 'Produce',
+  // Bakery
+  bread: 'Bakery',
+  rolls: 'Bakery',
+  bun: 'Bakery',
+  buns: 'Bakery',
+  cake: 'Bakery',
+  croissant: 'Bakery',
+  bagel: 'Bakery',
+  bagels: 'Bakery',
+  muffin: 'Bakery',
+  muffins: 'Bakery',
+  donut: 'Bakery',
+  donuts: 'Bakery',
+  // Frozen
+  icecream: 'Frozen',
+  ice: 'Frozen',
+  peas: 'Frozen',
+  pizza: 'Frozen',
+  fries: 'Frozen',
+  nuggets: 'Frozen',
+  berries: 'Frozen',
+  // Pantry
+  rice: 'Pantry',
+  pasta: 'Pantry',
+  beans: 'Pantry',
+  flour: 'Pantry',
+  sugar: 'Pantry',
+  salt: 'Pantry',
+  oil: 'Pantry',
+  vinegar: 'Pantry',
+  cereal: 'Pantry',
+  oats: 'Pantry',
+  honey: 'Pantry',
+  jam: 'Pantry',
+  peanut: 'Pantry',
+  peanuts: 'Pantry',
+  peanutbutter: 'Pantry',
+  // Beverages
+  juice: 'Beverages',
+  soda: 'Beverages',
+  water: 'Beverages',
+  coffee: 'Beverages',
+  tea: 'Beverages',
+  beer: 'Beverages',
+  wine: 'Beverages',
+  // Household
+  soap: 'Household',
+  detergent: 'Household',
+  tissue: 'Household',
+  tissues: 'Household',
+  bleach: 'Household',
+  cleaner: 'Household',
+  towel: 'Household',
+  towels: 'Household',
+  napkin: 'Household',
+  napkins: 'Household',
+  paper: 'Household',
+  "paper towels": 'Household',
+  foil: 'Household',
+  bag: 'Household',
+  bags: 'Household',
+  // Other
+  batteries: 'Other',
+  candle: 'Other',
+  candles: 'Other',
+  lightbulb: 'Other',
+  lightbulbs: 'Other',
+  // Add more as needed
+};
+
 function App() {
   const [items, setItems] = useState<GroceryItem[]>([]);
   const [newItem, setNewItem] = useState('');
@@ -59,11 +190,20 @@ function App() {
 
   const addItem = () => {
     if (newItem.trim()) {
+      // Try to auto-assign category by partial match
+      const itemName = newItem.trim().toLowerCase();
+      let autoCategory = newCategory;
+      for (const [keyword, category] of Object.entries(ITEM_CATEGORY_MAP)) {
+        if (itemName.includes(keyword)) {
+          autoCategory = category;
+          break;
+        }
+      }
       const item: GroceryItem = {
         id: Date.now().toString(),
         name: newItem.trim(),
         completed: false,
-        category: newCategory,
+        category: autoCategory,
       };
       setItems([...items, item]);
       setNewItem('');
@@ -205,6 +345,14 @@ function App() {
                   <option key={option} value={option} className="bg-white text-gray-900 dark:bg-gray-800 dark:text-gray-100">{option}</option>
                 ))}
               </select>
+              <button
+                onClick={addItem}
+                className="px-3 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center"
+                title="Add item"
+                aria-label="Add item"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
               <button
                 onClick={saveCurrentList}
                 className="px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105 active:scale-95 min-w-[90px]"
