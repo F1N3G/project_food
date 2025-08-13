@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Edit3, Trash2, Check, X, ShoppingCart } from 'lucide-react';
+import { collection, getDocs, addDoc } from "firebase/firestore";
+import { db } from "./firebase";
 
 interface GroceryItem {
   id: string;
@@ -188,7 +190,19 @@ function App() {
     }
   }, [darkMode]);
 
-  const addItem = () => {
+  useEffect(() => {
+    async function fetchItems() {
+      const querySnapshot = await getDocs(collection(db, "groceryItems"));
+      const itemsFromDB = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setItems(itemsFromDB as GroceryItem[]);
+    }
+    fetchItems();
+  }, []);
+
+  const addItem = async () => {
     if (newItem.trim()) {
       // Try to auto-assign category by partial match
       const itemName = newItem.trim().toLowerCase();
@@ -205,6 +219,8 @@ function App() {
         completed: false,
         category: autoCategory,
       };
+      // Add to Firestore
+      await addDoc(collection(db, "groceryItems"), item);
       setItems([...items, item]);
       setNewItem('');
       setNewCategory(CATEGORY_OPTIONS[0]);
